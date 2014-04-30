@@ -19,7 +19,7 @@ public class Main {
 		
 		Controllo controllo = new Controllo();
 		campo.setVisible(true);
-		javax.swing.JOptionPane.showMessageDialog( null, "Istruzioni:\nPer muovere una pedina normale, selezionare la pedina e successivamente\nselezionare la casella vuota dove si desidera spostarla.\n\nIn caso di mangiata, selezionare prima la pedina da muovere\ne selezionare poi la pedina da mangiare;\nInoltre, sarà impossibile muovere le altre pedine.\n\nNel caso venissero selezionate consecutivamente due caselle\n non adiacenti diagonalmente, fare doppio clic sulla pedina che si desidera muovere.");
+		javax.swing.JOptionPane.showMessageDialog( null, "Istruzioni:\nPer muovere una pedina normale, selezionare la pedina e successivamente\nselezionare la casella vuota dove si desidera spostarla.\n\nIn caso di mangiata, selezionare prima la pedina da muovere\ne selezionare poi la pedina da mangiare;\nInoltre, sarï¿½ impossibile muovere le altre pedine.\n\nNel caso venissero selezionate consecutivamente due caselle\n non adiacenti diagonalmente, fare doppio clic sulla pedina che si desidera muovere.");
 		String campopr = campo.toString();
 		
 		while(true) {
@@ -86,6 +86,7 @@ public class Main {
 				}
 			}
 		campo.setVisible(false);
+		System.exit(0);
 	}
 }
 	
