@@ -1,195 +1,117 @@
 package ita.univr.elaborato.model;
 
 import java.awt.Color;
-import java.util.Random;
 
-import javax.swing.JOptionPane;
-
-import ita.univr.elaborato.controller.ObbligoMangiata;
 import ita.univr.elaborato.view.CampoDiGioco;
 import ita.univr.elaborato.view.Pulsante;
 
 public class Controllo {
 	
-	private boolean doppio, Gbloccato,Ibloccato;
-	private int cont;
+	private boolean doppio,NonServeMaServe;
 	public Controllo() {
-		
 	}
 	
 	public void Muovi(int x, int y, int xp, int yp, CampoDiGioco campo , boolean turno){
 		
 		campo = settaS(x,y, campo);
-		int state = campo.PrendiS();// prendi s � della prima pedina quindi ok
-		
+		int state = campo.PrendiS();// prendi lo stato della prima pedina
+		System.out.println("Controllo 1");
 		if(!turno){
-			ObbligoMangiata control = new ObbligoMangiata(campo);
 			System.out.println("Sono in Muovi con X:"+x+" Y:"+y+ " S:"+ state + " Xp:"+xp+" Yp:"+yp);
 			
-			if(((!turno && (state == 3 || state == 5)) || (turno && (state == 2 || state == 4)))) resetta(campo); //nope
-			else if(state!=2 && state!=4 ) System.out.println("mossa non effettuata1"); //se parto da stato nero,sto cazzo
-			else if(x==xp && y==yp) System.out.println("mossa non effettuata2");  // stessa casella
-			else if(state == campo.PrendiSp()) System.out.println("mossa non possibile1"); //mossa su stessa pedina
-			else if((state==2) && !(((xp==x-1)&&(yp==y-1))||((xp==x-1)&&(yp==y+1))) && (x>0 || x<8) && (y>=0 || y<8)) System.out.println("mossa non possibile2"); 
-			//se damone non muove oltre il suo raggio...
-			else if((state == 4) && !(((xp==x-1 || xp==x+1 ) && ((yp==y-1) || yp==y+1 ))) ) System.out.println("mossa non possibile3");
+			if(((!turno && (state == 3 || state == 5)) || (turno && (state == 2 || state == 4)))) resetta(campo);
+			else if(state!=2 && state!=4 ) NonServeMaServe=false;
+			else if(x==xp && y==yp) NonServeMaServe=false;
+			else if(state == campo.PrendiSp()) NonServeMaServe=false;
+			else if((state==2) && !(((xp==x-1)&&(yp==y-1))||((xp==x-1)&&(yp==y+1))) && (x>0 || x<8) && (y>=0 || y<8))NonServeMaServe=false; 
+			else if((state == 4) && !(((xp==x-1 || xp==x+1 ) && ((yp==y-1) || yp==y+1 ))) ) NonServeMaServe=false;
 			else if(MossaObbligata(x,y,xp,yp,state,campo)==true) {
 				   resetta(campo);
 			} else if(!CanEat(x,y,xp,yp,campo)){
-				if(canMove(campo))
+				if(CanMove(campo))
 				   MossaNormale(x,y,xp,yp, campo);
-				   }
+			}
 				  else {
 				   Mangia(x,y,xp,yp, campo);
 				  }
-				
-				
-				
-				/* if(MossaObbligata(x,y,xp,yp,state,campo)) {
-				resetta(campo);
-				/*una pedina può mangiare...
-				non può muovere normalmente (obbligo di mangiata)
-			}
-			else {
-				System.out.println("Perch� non vai?");
-					if(control.retObbligo()){
-						System.out.println("gi� 1");
-						MossaNormale(x,y,xp,yp, campo);
-					}else {
-						System.out.println("gi� 2");
-						switch(control.retEat(x, y)){
-							case 1: Mangia(x,y,x+1,y-1, campo); break;
-							case 2: Mangia(x,y,x+1,y+1, campo); break;
-							case 3: Mangia(x,y,x-1,y-1, campo); break;
-							case 4: Mangia(x,y,x-1,y+1, campo); break;
-						}
-				}		*/
 		}else{
 			System.out.println("Sono in Muovi con Ia in X:"+x+" Y:"+y+ " S:"+ state + " Xp:"+xp+" Yp:"+yp);
 			
-			if(((!turno && (state == 3 || state == 5)) || (turno && (state == 2 || state == 4)))) resetta(campo); //nope
-			else if(state!=3 && state!=5 ) System.out.println("mossa non effettuata3"); //se parto da stato nero,sto cazzo
-			else if(x==xp && y==yp) System.out.println("mossa non effettuata4");  // stessa casella
-			else if(state == campo.PrendiSp()) System.out.println("mossa non possibile4"); //mossa su stessa pedina
-			else if((state==3) && !(((xp==x+1)&&(yp==y-1))||((xp==x+1)&&(yp==y+1))) && (x>0 || x<8) && (y>=0 || y<8)) System.out.println("mossa non possibile5"); 
-			//se damone non muove oltre il suo raggio...
-			else if((state == 5) && !(((xp==x-1 || xp==x+1 ) && ((yp==y-1) || yp==y+1 ))) ) System.out.println("mossa non possibile6");
+			if(((!turno && (state == 3 || state == 5)) || (turno && (state == 2 || state == 4)))) resetta(campo);
+			else if(state!=3 && state!=5 )NonServeMaServe=false;
+			else if(x==xp && y==yp) NonServeMaServe=false;
+			else if(state == campo.PrendiSp()) NonServeMaServe=false;
+			else if((state==3) && !(((xp==x+1)&&(yp==y-1))||((xp==x+1)&&(yp==y+1))) && (x>0 || x<8) && (y>=0 || y<8))NonServeMaServe=false; 
+			else if((state == 5) && !(((xp==x-1 || xp==x+1 ) && ((yp==y-1) || yp==y+1 ))) ) NonServeMaServe=false;
 			else 
-				MossaNormale(x,y,xp,yp, campo);
-			/*else if(MossaObbligata(x,y,xp,yp,state,campo)) {
-				JOptionPane.showMessageDialog(campo, "Puoi Mangiare!");
-				/*una pedina può mangiare...
-				non può muovere normalmente (obbligo di mangiata)
-			}*/
+				if(CanMoveIA(campo))
+					MossaNormale(x,y,xp,yp, campo);
 			}
-		// non posso fare il passo doppio, così diventa controintuitivo. vedere se si può fixare
 	}
 	
-	private boolean canMove(CampoDiGioco campo) {
+	public boolean CanMove(CampoDiGioco campo) {
 		
-		CampoDiGioco temp = campo;
-		
-		for(int c=0;c<8;c++)
+		for(int c=0;c<8;c++) {
 			for(int i=0;i<8;i++){
-				int s=temp.retPulsanti()[c][i].prendiStato();
-				switch (s){
-				case 4:
-					try{
-						int sp=temp.retPulsanti()[c+1][i-1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-						try{
-						int sp=temp.retPulsanti()[c+1][i+1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-				case 2:
-					try{
-						int sp=temp.retPulsanti()[c-1][i-1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-						try{
-						int sp=temp.retPulsanti()[c-1][i+1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-				default: break;
+				
+				if(campo.retPulsanti()[c][i].prendiStato()==2) {
+					try {
+					if(campo.retPulsanti()[c-1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+					if(campo.retPulsanti()[c-1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+				}
+				
+				if(campo.retPulsanti()[c][i].prendiStato()==4) {
+					try {
+						if(campo.retPulsanti()[c+1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c+1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c-1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c-1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+				}
 				}
 			}
-				
-		Gbloccato=true;
 		return false;
 	}
-private boolean canMoveIA(CampoDiGioco campo) {
-		
-		CampoDiGioco temp = campo;
-		
-		for(int c=0;c<8;c++)
+public boolean CanMoveIA(CampoDiGioco campo) {
+				
+		for(int c=0;c<8;c++) {
 			for(int i=0;i<8;i++){
-				int s=temp.retPulsanti()[c][i].prendiStato();
-				switch (s){
-				case 5:
-						try{
-						int sp=temp.retPulsanti()[c-1][i-1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-						try{
-						int sp=temp.retPulsanti()[c-1][i+1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-				case 3:
-						try{
-						int sp=temp.retPulsanti()[c+1][i-1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-						try{
-						int sp=temp.retPulsanti()[c+1][i+1].prendiStato();
-						if(sp == 1)
-							return true;
-						}
-						catch (Exception e){
-							// null
-						}
-						break;
-				default: break;
+				
+				if(campo.retPulsanti()[c][i].prendiStato()==3) {
+					try {
+					if(campo.retPulsanti()[c+1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+					if(campo.retPulsanti()[c+1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+				}
+				
+				if(campo.retPulsanti()[c][i].prendiStato()==5) {
+					try {
+						if(campo.retPulsanti()[c+1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c+1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c-1][i-1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+					try {
+						if(campo.retPulsanti()[c-1][i+1].prendiStato()==1) return true;
+					} catch (Exception e) {}
+				}
 				}
 			}
-				
-		Ibloccato=true;
 		return false;
-	}
-	
-	public boolean retGBloccato(){
-		return Gbloccato;
-	}
-	public boolean retIBloccato(){
-		return Ibloccato;
 	}
 
 	private CampoDiGioco settaS(int x, int y,CampoDiGioco campo) {
@@ -200,6 +122,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 
 	public boolean CanEat(int x, int y, int xp, int yp,CampoDiGioco campo){
+		System.out.println("Controllo 5");
 		int state=campo.retPulsanti()[x][y].prendiStato();
 		int statep=campo.retPulsanti()[xp][yp].prendiStato();
 		if(((state==2 && (y-1 == yp && x-1 == xp) && statep == 3) && (yp-1 >= 0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)){recolor(6,campo.retPulsanti()[x][y]); recolor(7,campo.retPulsanti()[xp][yp]); return true;}
@@ -214,33 +137,39 @@ private boolean canMoveIA(CampoDiGioco campo) {
 		if(((state==5 && (y+1 == yp && x-1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)) return true;
 		if(((state==5 && (y-1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp-1 >= 0 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp-1].prendiStato()== 1)) return true;
 		if(((state==5 && (y+1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1))  return true;
+		System.out.println("Controllo 6");
 		return false;
 	}
 	
 	private void MossaNormale(int x,int y,int xp,int yp,CampoDiGioco campo){
-		int state = campo.PrendiS();
-		int statep = campo.PrendiSp();
+		System.out.println("Controllo 7");
+		int state=campo.retPulsanti()[x][y].prendiStato();
+		int statep=campo.retPulsanti()[xp][yp].prendiStato();
 		Pulsante[][] pulsanti = campo.retPulsanti();
 		if(((state==2 && statep==1) || (state==3)&&(statep==1))) { 
+			System.out.println("Controllo 8");
 			pulsanti[x][y].cambiaStato(statep);
 			pulsanti[xp][yp].cambiaStato(state);
 			if((state==2)&&(xp==0)) { 
+				System.out.println("Controllo 9");
 				pulsanti[xp][yp].cambiaStato(4);
 				recolor(1,pulsanti[x][y]);
 				recolor(4,pulsanti[xp][yp]);
 			}
 			else if((state==3)&&(xp==7)) {
+				System.out.println("Controllo 10");
 				pulsanti[xp][yp].cambiaStato(5);
 				recolor(1,pulsanti[x][y]);
 				recolor(5,pulsanti[xp][yp]);
 			}
 			else {
+				System.out.println("Controllo 11");
 				recolor(statep,pulsanti[x][y]);
 				recolor(state,pulsanti[xp][yp]);
 			}
 		}
-
 		if((state==4 || state==5) && (statep==1)) {
+			System.out.println("Controllo 12");
 			pulsanti[x][y].cambiaStato(statep);
 			pulsanti[xp][yp].cambiaStato(state);
 			recolor(statep,pulsanti[x][y]);
@@ -249,28 +178,33 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	public void Mangia(int x,int y,int xp,int yp,CampoDiGioco campo) {
-		int state = campo.PrendiS();
-		int statep = campo.PrendiSp();
-		boolean temp = true;
-		boolean temp2 = true;
+		System.out.println("Controllo 13");
+		int state=campo.retPulsanti()[x][y].prendiStato();
+		int statep=campo.retPulsanti()[xp][yp].prendiStato();
+		boolean temp = false;
+		boolean temp2 = false;
 		Pulsante[][] pulsanti = campo.retPulsanti();
 		this.doppio=false;
 		int xd=0,yd=0;
 		if(((state==2 && (y-1 == yp && x-1 == xp) && statep == 3) && (yp-1 >=0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)) {
 			//mangiata sx pedina rossa
+			System.out.println("Controllo 14");
 			mangiaSXA(x,y,xp,yp,state,pulsanti);
 			if((state==2 && xp-1==0)) {
 				pulsanti[xp-1][yp-1].cambiaStato(4);
 				recolor(4,pulsanti[xp-1][yp-1]);
+				temp = true;
 			}
 			xd=xp-1;
 			yd=yp-1;
 			try {
+				System.out.println("Controllo 15");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 16");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
@@ -279,19 +213,24 @@ private boolean canMoveIA(CampoDiGioco campo) {
 		
 		if(((state==2 && (y+1 == yp && x-1 == xp) && statep == 3) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)) {
 			//mangiata dx pedina rossa
+			System.out.println("Controllo 17");
 			mangiaDXA(x,y,xp,yp,state,pulsanti);
 			if((state==2 && xp-1==0)) {
+				System.out.println("Controllo 18");
 				pulsanti[xp-1][yp+1].cambiaStato(4);
 				recolor(4,pulsanti[xp-1][yp+1]);
+				temp=true;
 			}
 			xd=xp-1;
 			yd=yp+1;
 			try {
+				System.out.println("Controllo 19");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 20");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch (Exception e) {
 				
@@ -305,25 +244,27 @@ private boolean canMoveIA(CampoDiGioco campo) {
 			
 			mangiaSXB(x,y,xp,yp,state,pulsanti);
 			if((state==3 && xp+1==7)) {
+				System.out.println("Controllo 21");
 				pulsanti[xp+1][yp-1].cambiaStato(5);
 				recolor(5,pulsanti[xp+1][yp-1]);
+				temp2= true;
+			}else{
+				xd=xp+1;
+				yd=yp-1;
+				try {
+					System.out.println("Controllo 22");
+				if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
+				} catch(Exception e) {
+					// null
+				}
+				try{
+					System.out.println("Controllo 23");
+				if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
+				}
+				catch(Exception e) {
+					//null
+				}
 			}
-			xd=xp+1;
-			yd=yp-1;
-			try {
-			if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
-			} catch(Exception e) {
-				// null
-			}
-			try{
-			if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
-			}
-			catch(Exception e) {
-				//null
-			}
-			/*if(temp) doppio=true;
-			else if(temp2) doppio=true;
-			else doppio=false;*/
 		}
 		
 		if(((state==3 && (y+1 == yp && x+1 == xp) && statep == 2) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1)) {
@@ -331,149 +272,178 @@ private boolean canMoveIA(CampoDiGioco campo) {
 			System.out.println("non vuoi mangiare2? x:" + x + " y:"+ y + " xp:" + xp + " yp:" + yp + campo);
 			mangiaDXB(x,y,xp,yp,state,pulsanti);
 			if((state==3 && xp+1==7)) {
+				System.out.println("Controllo 24");
 				pulsanti[xp+1][yp+1].cambiaStato(5);
 				recolor(5,pulsanti[xp+1][yp+1]);
-			}
-			xd=xp+1;
-			yd=yp+1;
-			try {	
-			if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
-			} catch(Exception e) {
-				// null
-			}
-			try{
-			if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
-			} 
-			catch(Exception e) {
-				//null
+				temp2=true;
+			}else{
+				xd=xp+1;
+				yd=yp+1;
+				try {	
+					System.out.println("Controllo 25");
+				if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
+				} catch(Exception e) {
+					// null
+				}
+				try{System.out.println("Controllo 26");
+					
+				if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
+				} 
+				catch(Exception e) {
+					//null
+				}
 			}
 		}
 		
-		if(((state==4 && (y-1 == yp && x-1 == xp) && (statep == 3 || statep == 5)) && (yp-1 >= 0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)) {
+		if(((!temp && state==4 && (y-1 == yp && x-1 == xp) && (statep == 3 || statep == 5)) && (yp-1 >= 0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)) {
+			System.out.println("Controllo 27");
 			mangiaSXA(x,y,xp,yp,state,pulsanti);
 			xd=xp-1;
 			yd=yp-1;
 			try {
+				System.out.println("Controllo 28");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 29");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 30");
 			if(CanEat(xd,yd,xd+1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 31");
 			if(CanEat(xd,yd,xd+1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				
 			}
 		}
 		
-		if(((state==4 && (y+1 == yp && x-1 == xp) && (statep == 3 || statep == 5)) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)) {
+		if(((!temp && state==4 && (y+1 == yp && x-1 == xp) && (statep == 3 || statep == 5)) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)) {
+			System.out.println("Controllo 32");
 			mangiaDXA(x,y,xp,yp,state,pulsanti);
 			xd=xp-1;
 			yd=yp+1;
 			try {
+				System.out.println("Controllo 33");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 34");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 35");
 			if(CanEat(xd,yd,xd+1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 36");
 			if(CanEat(xd,yd,xd+1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				
 			}
 		}
 		
-		if(((state==4 && (y-1 == yp && x+1 == xp) && (statep == 3 || statep == 5)) && (yp-1 >= 0 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp-1].prendiStato()== 1)) {
+		if(((!temp && state==4 && (y-1 == yp && x+1 == xp) && (statep == 3 || statep == 5)) && (yp-1 >= 0 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp-1].prendiStato()== 1)) {
+			System.out.println("Controllo 37");
 			mangiaSXB(x,y,xp,yp,state,pulsanti);
 			xd=xp+1;
 			yd=yp-1;
 			try {
+				System.out.println("Controllo 38");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 39");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 40");
 			if(CanEat(xd,yd,xd+1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 41");
 			if(CanEat(xd,yd,xd+1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				
 			}
 		}
 		
-		if(((state==4 && (y+1 == yp && x+1 == xp) && (statep == 3 || statep == 5)) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1)) {
+		if(((!temp && state==4 && (y+1 == yp && x+1 == xp) && (statep == 3 || statep == 5)) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1)) {
+			System.out.println("Controllo 42");
 			mangiaDXB(x,y,xp,yp,state,pulsanti);
 			xd=xp+1;
 			yd=yp+1;
 			try {
+				System.out.println("Controllo 43");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 44");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 45");
 			if(CanEat(xd,yd,xd+1,yd-1,campo)) doppio=true;
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 46");
 			if(CanEat(xd,yd,xd+1,yd+1,campo)) doppio=true;
 			} catch(Exception e) {
 				
 			}
 		}
 		
-		if(((state==5 && (y-1 == yp && x-1 == xp) && (statep == 2 || statep == 4)) && (yp-1 >= 0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)) {
+		if(((!temp2 && state==5 && (y-1 == yp && x-1 == xp) && (statep == 2 || statep == 4)) && (yp-1 >= 0 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp-1].prendiStato()== 1)) {
 			System.out.println("non vuoi mangiare? x:" + x + " y:"+ y + " xp:" + xp + " yp:" + yp + campo);
 			mangiaSXA(x,y,xp,yp,state,pulsanti);
 			xd=xp-1;
 			yd=yp-1;
 			try {
+				System.out.println("Controllo 47");
 			if(CanEat(xd,yd,xd-1,yd-1,campo)) Mangia(xd,yd,xd-1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 48");
 			if(CanEat(xd,yd,xd-1,yd+1,campo)) Mangia(xd,yd,xd-1,yd+1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 49");
 			if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 50");
 			if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
 			} catch(Exception e) {
 				
@@ -481,27 +451,31 @@ private boolean canMoveIA(CampoDiGioco campo) {
 			System.out.println("Sono Qui 1 con doppio:"+doppio);
 		}
 		
-		if(((state==5 && (y+1 == yp && x-1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)){
+		if(((!temp2 && state==5 && (y+1 == yp && x-1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp-1>=0))) if((campo.retPulsanti()[xp-1][yp+1].prendiStato()== 1)){
 			System.out.println("non vuoi mangiare? x:" + x + " y:"+ y + " xp:" + xp + " yp:" + yp + campo);
 			mangiaDXA(x,y,xp,yp,state,pulsanti);
 			xd=xp-1;
 			yd=yp+1;
 			try {
+				System.out.println("Controllo 51");
 				if(CanEat(xd,yd,xd-1,yd-1,campo)) Mangia(xd,yd,xd-1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 52");
 				if(CanEat(xd,yd,xd-1,yd+1,campo)) Mangia(xd,yd,xd-1,yd+1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 53");
 				if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 54");
 				if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
 			} catch(Exception e) {
 				
@@ -509,27 +483,31 @@ private boolean canMoveIA(CampoDiGioco campo) {
 			System.out.println("Sono Qui 2 con doppio:"+doppio);
 		}
 		
-		if(((state==5 && (y-1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp-1 >= 0 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp-1].prendiStato()== 1)){
+		if(((!temp2 && state==5 && (y-1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp-1 >= 0 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp-1].prendiStato()== 1)){
 			System.out.println("non vuoi mangiare? x:" + x + " y:"+ y + " xp:" + xp + " yp:" + yp + campo);
 			mangiaSXB(x,y,xp,yp,state,pulsanti);
 			xd=xp+1;
 			yd=yp-1;
 			try {
+				System.out.println("Controllo 55");
 				if(CanEat(xd,yd,xd-1,yd-1,campo)) Mangia(xd,yd,xd-1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 56");
 				if(CanEat(xd,yd,xd-1,yd+1,campo)) Mangia(xd,yd,xd-1,yd+1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 57");
 				if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 58");
 				if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
 			} catch(Exception e) {
 				
@@ -537,27 +515,31 @@ private boolean canMoveIA(CampoDiGioco campo) {
 			System.out.println("Sono Qui 3 con doppio:"+doppio);
 		}
 		
-		if(((state==5 && (y+1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1)){
+		if(((!temp2 && state==5 && (y+1 == yp && x+1 == xp) && (statep == 2 || statep == 4)) && (yp+1 <8 && xp+1<8))) if((campo.retPulsanti()[xp+1][yp+1].prendiStato()== 1)){
 			System.out.println("non vuoi mangiare? x:" + x + " y:"+ y + " xp:" + xp + " yp:" + yp + campo);
 			mangiaDXB(x,y,xp,yp,state,pulsanti);
 			xd=xp+1;
 			yd=yp+1;
 			try {
+				System.out.println("Controllo 59");
 				if(CanEat(xd,yd,xd-1,yd-1,campo)) Mangia(xd,yd,xd-1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 60");
 				if(CanEat(xd,yd,xd-1,yd+1,campo)) Mangia(xd,yd,xd-1,yd+1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 61");
 				if(CanEat(xd,yd,xd+1,yd-1,campo)) Mangia(xd,yd,xd+1,yd-1,campo);
 			} catch(Exception e) {
 				// null
 			}
 			try{
+				System.out.println("Controllo 62");
 				if(CanEat(xd,yd,xd+1,yd+1,campo)) Mangia(xd,yd,xd+1,yd+1,campo);
 			} catch(Exception e) {
 				
@@ -594,7 +576,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 		}	
 	}
 	
-	private void resetta(CampoDiGioco campo) {
+	public void resetta(CampoDiGioco campo) {
 		campo.SetX(0);
 		campo.SetY(0);
 		campo.SetXp(0);
@@ -602,6 +584,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	private void mangiaSXA(int x, int y, int xp, int yp, int state, Pulsante pulsanti[][]) {
+		System.out.println("Controllo 63");
 		pulsanti[xp-1][yp-1].cambiaStato(state);
 		pulsanti[x][y].cambiaStato(1);
 		pulsanti[xp][yp].cambiaStato(1);
@@ -611,6 +594,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	private void mangiaDXA(int x, int y, int xp, int yp, int state, Pulsante pulsanti[][]) {
+		System.out.println("Controllo 64");
 		pulsanti[xp-1][yp+1].cambiaStato(state);
 		pulsanti[x][y].cambiaStato(1);
 		pulsanti[xp][yp].cambiaStato(1);
@@ -620,6 +604,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	private void mangiaSXB(int x, int y, int xp, int yp, int state, Pulsante pulsanti[][]) {
+		System.out.println("Controllo 65");
 		pulsanti[xp+1][yp-1].cambiaStato(state);
 		pulsanti[x][y].cambiaStato(1);
 		pulsanti[xp][yp].cambiaStato(1);
@@ -629,6 +614,7 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	private void mangiaDXB(int x, int y, int xp, int yp, int state, Pulsante pulsanti[][]) {
+		System.out.println("Controllo 66");
 		pulsanti[xp+1][yp+1].cambiaStato(state);
 		pulsanti[x][y].cambiaStato(1);
 		pulsanti[xp][yp].cambiaStato(1);
@@ -638,7 +624,8 @@ private boolean canMoveIA(CampoDiGioco campo) {
 	}
 	
 	private boolean MossaObbligata(int x, int y, int xp, int yp, int state, CampoDiGioco campo) {
-		  if(CanEat(x,y,xp,yp,campo)) return false;
+		System.out.println("Controllo 67");
+		if(CanEat(x,y,xp,yp,campo)) return false;
 		  for(int xt=0;xt<8;xt++) {
 		   for(int yt=0;yt<8;yt++) {
 		    if(state==2) {
@@ -661,34 +648,8 @@ private boolean canMoveIA(CampoDiGioco campo) {
 		    } catch (Exception e){
 		    	//null
 		    }
-		    
-		    /*if(state==3) {
-		     if(CanEat(xt,yt,xt+1,yt-1,campo)) casovero = true;
-		     if(CanEat(xt,yt,xt+1,yt+1,campo)) casovero = true;
-		    }
-		    
-		    if(state==5) {
-		     if(CanEat(xt,yt,xt-1,yt-1,campo)) casovero = true;
-		     if(CanEat(xt,yt,xt-1,yt+1,campo)) casovero = true;
-		     if(CanEat(xt,yt,xt+1,yt-1,campo)) casovero = true;
-		     if(CanEat(xt,yt,xt+1,yt+1,campo)) casovero = true;
-		    }*/
-		    
 		    }
 		  }
 		  return false;
 		 }
-	///////////////////////////////////////////////////////
-	//
-	// BUG :
-	// 3) COLLEGARE (E SPERARE) CHE L'IA FUNZIONI
-	// 6) SPERIAMO DI ARRIVARE IN FONDO PRIMA O POI
-	// 7) MANGIATA CHE FA CAGARE
-	// 8) SONO CAZZI SE SI PERDE IL TEMPO (CLICK SBAGLIATO?)
-	// 11) ERRORI IN ALCUNI CASI DI MANGIATE = SONO CAZZI. SEMBRA PROBLEMA TURNI NO CONTROLLI
-	// 12) IMPLEMENTARE MANGIATA OBBLIGATORIA NEL TURNO
-	// 13)
-	//		
-	///////////////////////////////////////////////////////
-	
 }

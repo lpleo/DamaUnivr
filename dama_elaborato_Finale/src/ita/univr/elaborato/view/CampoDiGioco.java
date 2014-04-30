@@ -1,14 +1,11 @@
 package ita.univr.elaborato.view;
 
-
-
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -16,14 +13,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 	public class CampoDiGioco extends JFrame {
-		public boolean partita;
-		public boolean prima;
+		public boolean partita, esci, prima;
 		private Pulsante[][] pulsanti;
 		private int x,y,state;
 		private int xp,yp,statep;
 		public CampoDiGioco() {
 			super("Nuova partita");
-		
+			
 			this.setLayout(new BorderLayout());
 			setSize(700,700);
 			getContentPane().setBackground(Color.DARK_GRAY);
@@ -31,52 +27,41 @@ import javax.swing.JPanel;
 			add(dx(), BorderLayout.CENTER);
 			creaMenu();
 			partita = false;
-				
+			esci= false;
 		}
 		
-
-
 		private void creaMenu() {
-			JMenuItem Menu = new JMenuItem("Menu");
 			JMenuItem Gioco = new JMenuItem("Nuova Partita");
-			JMenuItem Opzioni = new JMenuItem("Opzioni");
 			JMenuItem Licenza = new JMenuItem("Licenza");
 			JMenuItem Esci = new JMenuItem("Esci");
 			
 			JMenu testo = new JMenu("Menu");
-			testo.add(Menu);
 			testo.add(Gioco);
-			testo.add(Opzioni);
 			testo.add(Licenza);
 			testo.add(Esci);
-			
-			/*JMenuItem Istruzioni = new JMenuItem("Istruzioni");
-			JMenuItem Guida = new JMenuItem("Guida");
-			JMenuItem Contatti = new JMenuItem("Contatti");
-			
-			JMenu testoHelp = new JMenu("Guida");
-			testoHelp.add(Istruzioni);
-			testoHelp.add(Guida);
-			testoHelp.add(Contatti);*/
 						
 			JMenuBar bar = new JMenuBar();
-		//	JMenuBar help = new JMenuBar();
-			
 			bar.add(testo);
-		//	bar.add(testoHelp);
-			//help.add(testoHelp);
-			
+		
 			Gioco.addActionListener(new ActionListener(){
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
 					partita = true;
 				}
-
+			});
+			Licenza.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					javax.swing.JOptionPane.showMessageDialog(null, "\n\t\tUniversità di Verona\n\t\t\t    Elaborato Dama\n\n\tA cura di:\n\t\t\t\t\t- Piccoli Leonardo\n\t\t\t\t\t- Visentin Alberto\n\t\t\t\t\t- Vucinic Paolo\n");		
+				}
+			});
+			Esci.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					esci=true;
+				}
 			});
 			this.setJMenuBar(bar);
-			//this.setJMenuBar(help);
 		}
 
 		private JPanel dx() {
@@ -100,10 +85,8 @@ import javax.swing.JPanel;
 					pannello.add(pulsanti[c][i]);
 				}		
 			}	
-			
 			return pannello;
 		}
-		
 		
 		public boolean retPartita(){
 			return partita;
@@ -144,9 +127,7 @@ import javax.swing.JPanel;
 		public void SetSp (int sp) {
 			this.statep=sp;
 		}
-		
-		
-		
+				
 		public int PrendiX() {
 			return this.x;
 		}
@@ -177,6 +158,7 @@ import javax.swing.JPanel;
 			}
 			return ret;
 		}
+		
 		public int toStringState(int x,int y) {
 			for(int c=0;c<8;c++) 
 				for(int i=0;i<8;i++) 
@@ -184,5 +166,8 @@ import javax.swing.JPanel;
 					return this.retPulsanti()[c][i].prendiStato();
 			return 9;
 		}
-			
+		
+		public boolean retEsci() {
+			return esci;
+		}
 	}
